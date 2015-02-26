@@ -1,0 +1,409 @@
+
+/* Grammar for Income tax Act */
+options {
+	STATIC = false ;
+	FORCE_LA_CHECK = true;
+}
+PARSER_BEGIN(Act)
+package org.dandi;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+class Act {
+	public static void main( String[] args )
+	throws ParseException, FileNotFoundException {
+		System.out.println("First argument = "+args[0]);
+		FileInputStream filename = new FileInputStream(args[0]);
+		System.setIn((filename));
+		//Act act = new Act (args[0]);
+		Act act = new Act (System.in);
+		SimpleNode root = act.Start() ; 
+		root.dump (" ");
+		//ystem.out.println("Total = "+val);
+	}
+}
+PARSER_END(Act)
+
+
+TOKEN_MGR_DECLS :
+{
+  int stringSize;
+}  
+
+SKIP : { < WS : " " >	}
+SKIP : {"\t" | "\r" | "\uFFFF" | "\u201a" | "\u00c4" | "\u00ee" | "\u00fa" | "\u00f9" | "\u00ec" | "\u2013" }
+
+TOKEN [IGNORE_CASE] :
+{
+   < CHAPTER_L : ("CHAPTER" | "Chapter" | "chapter") >
+|   < SECTION_L : ("SECTION" | "Section" | "section") >
+|   < SUBSECTION_L : ("sub-section" | "subsection" | "sub section") >
+|   < CLAUSE_L : "clause" >
+|   < SUBCLAUSE_L : "subclause" | "sub-clause" | "sub clause" >
+|   < PARAGRAPH_L : "paragraph" | "paragraphs" >
+|   < THIS_L : "this" >
+|   < OF_L : "of" >
+|   < AND_L : "and" >
+|   < OR_L : "or" >
+|   < COMMA_L : [ "," ] >
+|   < ITEM_L : "item" | "items" >
+|   < PROVIDED_L : "provided" >
+|   < EXPLANATION_L : "explanation" >
+//|   < NUMBERING : (<ROMAN_NUM>) >
+
+}	
+
+TOKEN: 
+{	< ROMAN_NUM_CAPS : (("M"){1,4} ("CM"|"CD"| ("D")?("C"){0,3}) ("XC"|"XL"|("L")?("X"){0,3}) ("IX"|"IV"|("V")?("I"){0,3}))
+		|(("M"){0,4} ("CM"|"CD"| ("D")?("C"){1,3}) ("XC"|"XL"|("L")?("X"){0,3}) ("IX"|"IV"|("V")?("I"){0,3}))
+		|(("M"){0,4} ("CM"|"CD"| ("D")?("C"){0,3}) ("XC"|"XL"|("L")?("X"){1,3}) ("IX"|"IV"|("V")?("I"){0,3}))
+		|(("M"){0,4} ("CM"|"CD"| ("D")?("C"){0,3}) ("XC"|"XL"|("L")?("X"){0,3}) ("IX"|"IV"|("V")?("I"){1,3}))
+		|(("M"){0,4} ("CM"|"CD"| ("D") ("C"){0,3}) ("XC"|"XL"|("L")?("X"){0,3}) ("IX"|"IV"|("V")?("I"){0,3}))
+		|(("M"){0,4} ("CM"|"CD"| ("D")?("C"){0,3}) ("XC"|"XL"|("L") ("X"){0,3}) ("IX"|"IV"|("V")?("I"){0,3}))
+		|(("M"){0,4} ("CM"|"CD"| ("D")?("C"){0,3}) ("XC"|"XL"|("L")?("X"){0,3}) ("IX"|"IV"|("V") ("I"){0,3})) >
+	
+|	< ROMAN_NUM_SMALL : (("m"){1,4} ("cm"|"cd"| ("d")?("c"){0,3}) ("xc"|"xl"|("l")?("x"){0,3}) ("ix"|"iv"|("v")?("i"){0,3}))
+		|(("m"){0,4} ("cm"|"cd"| ("d")?("c"){1,3}) ("xc"|"xl"|("l")?("x"){0,3}) ("ix"|"iv"|("v")?("i"){0,3}))
+		|(("m"){0,4} ("cm"|"cd"| ("d")?("c"){0,3}) ("xc"|"xl"|("l")?("x"){1,3}) ("ix"|"iv"|("v")?("i"){0,3}))
+		|(("m"){0,4} ("cm"|"cd"| ("d")?("c"){0,3}) ("xc"|"xl"|("l")?("x"){0,3}) ("ix"|"iv"|("v")?("i"){1,3}))
+		|(("m"){0,4} ("cm"|"cd"| ("d") ("c"){0,3}) ("xc"|"xl"|("l")?("x"){0,3}) ("ix"|"iv"|("v")?("i"){0,3}))
+		|(("m"){0,4} ("cm"|"cd"| ("d")?("c"){0,3}) ("xc"|"xl"|("l") ("x"){0,3}) ("ix"|"iv"|("v")?("i"){0,3}))
+		|(("m"){0,4} ("cm"|"cd"| ("d")?("c"){0,3}) ("xc"|"xl"|("l")?("x"){0,3}) ("ix"|"iv"|("v") ("i"){0,3})) >
+//	<ROMAN_NUM : ("M"| "c"| "d" | "x" | "l" | "i" | "v")+ >
+|   	< MONTH_CAPS : "JANUARY" | "FEBRUARY" | "MARCH" | "APRIL" | "MAY" | "JUNE" | "JULY" | "AUGUST" | "SEPTEMBER" | "OCTOBER" | "NOVEMBER" | "DECEMBER" >
+|   	< MONTH_SMALL : "January" | "February" | "March" | "April" | "May" | "June" | "July" | "August" | "September" | "October" | "November" | "December" >
+|	< MONTH_DAY : "1st"|"2nd"|"3rd"|"4th"|"5th"|"6th"| "30th"| "31st" >
+}
+
+TOKEN:
+{
+    < CHAPTER_NUM : <ROMAN_NUM_CAPS> (<HYPHEN>)? (["A"-"Z"]){0,3} >
+|   < SEC_NUM : "(" (<ROMAN_NUM_CAPS> | <ROMAN_NUM_SMALL> | (<DIGIT>)+) (<LETTER>){0,4} ")" >
+|   < CLAUSE_NUM : "(" (<LETTER>)+ ")" >
+|   < PERIOD : ["."] | ["."] <REF_NUMBER> >
+|   < DATE : ( (("1" | "2")? (["1"-"9"]) | ("10" | "20" | "30" | "31")| <MONTH_DAY> ) (<WS>)+  ("day")  (<WS>)+ ("of") (<WS>)+ (<MONTH_SMALL> | <MONTH_CAPS>)) >
+|   < YEAR : "19"(<DIGIT>){2} | "20"(<DIGIT>){2} >
+|   < NEWLINE : (("\n")+ ) >
+|   < WORD_REF : <WORD><REF_NUMBER> | <REF_NUMBER><WORD> >
+|   < WORD : (<LETTER>)+ ((<HYPHEN>)? (<LETTER>)+)* >
+//|   < PHRASE_REF : <PHRASE><NUMBER> | <NUMBER><PHRASE> >
+//|   < PHRASE : ("\"" (<WORD> (<WS>)*)+ "\"") | "(" (<WORD> (<WS>)*)+ ")" >
+|   < O_BRACE : "(" >
+|   < C_BRACE : ")" > 
+|   < NUMBER: (<DIGIT>)+ >
+|   < REF_NUMBER : (<DIGIT>)+ (<LETTER>){0,2} >
+|   < #DIGIT: ["0"-"9"] >
+|   < #LETTER: ["a"-"z","A"-"Z"] >
+|   < QUOTES : ["\""] > 
+|   < COLON : [":"] >
+|   < HYPHEN : ["-"] >
+|   < SEMI_COLON : [";"] >
+}
+
+SPECIAL_TOKEN:
+{
+    < REFERENCE : (<DIGIT>)+ >
+|   < SEPERATOR : [ "*" ] >
+|   < O_SQR_BRACKET :  "[" | (<REF_NUMBER>) "["  > {	System.out.print (" [[[ ");	}
+|   < C_SQR_BRACKET : [ "]" ] >
+}
+
+
+SimpleNode Start() throws NumberFormatException :
+{
+	int i ;
+	int value=0 ;
+} {
+	chapter()
+	{ return jjtThis;	}	
+}
+
+void chapter() throws NumberFormatException :
+{ } {
+	(LOOKAHEAD (chapter_heading() chapter_body()) chapter_heading() chapter_body() )+ (newline())? <EOF> 
+}
+
+void chapter_heading() throws NumberFormatException :
+{ } {
+	newline() <CHAPTER_L>  (<ROMAN_NUM_CAPS>)+ heading()
+}
+
+void heading()  throws NumberFormatException :
+{ } {
+	(word() | phrase() | reference_literals() | conjunct() | <COLON> | hyphen() )+ (period())?
+}
+
+void chapter_body() throws NumberFormatException :
+{ } {
+	{ System.out.print("CB "); 	}
+	(LOOKAHEAD (section()) section())*
+}
+void section() throws NumberFormatException :
+{ 	
+	System.out.print(" Sec# ");
+} {
+	(section_heading()) (LOOKAHEAD (section_body()) section_body())? (LOOKAHEAD (sub_section()) sub_section())*   
+}
+void section_heading () throws NumberFormatException :
+{ 
+	System.out.print(" SH* ");
+} {
+
+	newline() <SECTION_L> (LOOKAHEAD (2) (hyphen())? (<ROMAN_NUM_CAPS> | <NUMBER>))? heading()
+}
+
+void section_body() throws NumberFormatException :
+{ 
+	System.out.print(" SB* ");
+} {
+	newline() (LOOKAHEAD (sentence()) sentence())+  
+	//newline() (LOOKAHEAD (2) sentence())+ (LOOKAHEAD (2) proviso())* 
+}
+
+void sub_section () throws NumberFormatException :
+{ 
+	int subs = 0;
+	System.out.print (" Sub# ");	
+} {
+	newline() numbering() (LOOKAHEAD (sentence()) sentence())+ //(LOOKAHEAD (proviso()) proviso())* 
+}
+
+void sentence () throws NumberFormatException :
+{ 
+	int stmt = 0;	
+} {
+	simple_sentence() //| extended_sentence() 
+}
+void simple_sentence () :
+{ 
+	System.out.print ("SS# ");
+} {
+	//(   part_sentence() (period())) 
+	LOOKAHEAD (period_sentence()) period_sentence() | semi_colon_sentence()
+//	LOOKAHEAD (period_sentence()) period_sentence() 
+}
+void extended_sentence () :
+{ 
+	System.out.print ("ES# ");
+} {
+	part_sentence() (hyphen() numbered_paragraph()) //| colon() (proviso())+)
+}
+void extended_sentence_semicolon () :
+{ 
+	System.out.print ("ES-; ");
+} {
+	part_sentence() hyphen() ( (LOOKAHEAD(numbered_para_type8()) numbered_para_type8())+ ) 
+	//part_sentence() ( hyphen() ((LOOKAHEAD(numbered_para_type2()) numbered_para_type2() (conjunct())? )+)) | (colon() (proviso_semicolon())+)
+	//part_sentence() ( hyphen() ((LOOKAHEAD(numbered_para_type2()) numbered_para_type2() (conjunct())? )+ | (LOOKAHEAD (numbered_para_type1() newline()) numbered_para_type1())+ numbered_para_type2()) |  colon() (proviso_semicolon())+)
+}
+void extended_sentence_period () :
+{ 
+	System.out.print ("ES.. ");
+} {
+//	part_sentence() hyphen() (numbered_para_type2())+ numbered_para_type3()
+	LOOKAHEAD (extended_sentence_semicolon() numbered_para_type3()) extended_sentence_semicolon() numbered_para_type3() | part_sentence() colon() proviso_period()
+}
+void part_sentence () :
+{
+//	System.out.print ("PS# ");
+} {
+	( word() | LOOKAHEAD(date()) date() | LOOKAHEAD(reference()) reference() |literals() | phrase() | reference_literals() | conjunct()  | <O_BRACE> part_sentence() <C_BRACE> )+
+}
+void period_sentence () :
+{ 
+	//System.out.print ("SS# ");
+} {
+	LOOKAHEAD (extended_sentence_period()) extended_sentence_period() | (part_sentence() (period())) 
+}
+void semi_colon_sentence () :
+{ 
+	//System.out.print ("SS# ");
+} {
+	LOOKAHEAD (extended_sentence_semicolon()) extended_sentence_semicolon() | part_sentence() (semi_colon()) //| part_sentence()
+}
+void proviso_semicolon () :
+{ } {
+	newline() <PROVIDED_L> (LOOKAHEAD (period_sentence() (explanation_period())+ explanation_semicolon()) period_sentence() (explanation_period())+ explanation_semicolon() | semi_colon_sentence())
+}
+void proviso_period () :
+{ } {
+	newline() <PROVIDED_L> (LOOKAHEAD (period_sentence() (explanation_period())+) period_sentence() (explanation_period())+ | period_sentence() )
+	//newline() <PROVIDED_L> (period_sentence())
+}
+void explanation_semicolon () :
+{ } {
+	newline() <EXPLANATION_L> <NUMBER> <PERIOD> hyphen() (semi_colon_sentence())+
+}
+void explanation_period () :
+{ } {
+	newline() <EXPLANATION_L> <NUMBER> <PERIOD> hyphen() (period_sentence())+
+}
+void numbered_paragraph () :
+{	System.out.print ("\n(p) " );	} {
+	(LOOKAHEAD (numbered_para_type2() ) numbered_para_type2() (conjunct())?)+ numbered_para_type3()
+//	|	(LOOKAHEAD (numbered_para_type2()) numbered_para_type2() )+ numbered_para_type3()
+//	|	(numbered_para_type1 ()) ( LOOKAHEAD(3) (conjunct())? numbered_para_type1())*
+}
+void numbered_para_type1() :
+{	System.out.print ("\t( ) " );	} {
+	//LOOKAHEAD (newline() numbering() part_sentence() conjunct() newline())
+	( newline() numbering() part_sentence() conjunct() )
+	//( newline() numbering() part_sentence() ( LOOKAHEAD (2) <SEMI_COLON> conjunct() | period() | conjunct() ))+
+	{	}
+}
+void numbered_para_type2() :
+{	System.out.print ("\t(;) " );	} {
+	(newline() numbering() ( semi_colon_sentence()))
+	{	}
+}
+void numbered_para_type3() :
+{	System.out.print ("\t(.) " );	} {
+	(newline() numbering() ( period_sentence()))
+	{	}
+}
+void numbered_para_type0() :
+{	System.out.print ("\t(T0) " );	} {
+	(newline() numbering() ( part_sentence() ))
+	{	}
+}
+void numbered_para_type4() :
+{	System.out.print ("\t(T4) " );	} {
+	(numbered_para_type0() period())
+	{	}
+}
+void numbered_para_type5() :
+{	System.out.print ("\t(T5) " );	} {
+	(numbered_para_type0() semi_colon())
+	{	}
+}
+void numbered_para_type6() :
+{	System.out.print ("\t(T6) " );	} {
+	numbered_para_type5() conjunct()
+	{	}
+}
+void numbered_para_type7() :
+{	System.out.print ("\t(T7) " );	} {
+	(newline() numbering()  part_sentence() (conjunct() part_sentence())* conjunct())
+	{	}
+}
+void numbered_para_type8() :
+{	System.out.print ("\t(T8) " );	} {
+	newline() numbering() semi_colon_sentence()
+	{	}
+}
+void conjunct () :
+{ } {
+	<AND_L> | <OR_L>
+}
+void word () throws NumberFormatException :
+{ } {
+	wordRef() | <WORD>
+	{	System.out.print ("W");		}
+}
+void wordRef () throws NumberFormatException :
+{ } {
+	<WORD_REF>
+	{	System.out.print ("Wr");	}
+}
+void phrase () throws NumberFormatException :
+{ 
+	Token t;
+}{
+	quotes() (word())+ quotes() (<NUMBER>)?
+//	<PHRASE_REF> | <PHRASE>
+	{	System.out.print ("P");	}
+}
+void quotes () throws NumberFormatException :
+{ } {
+	<QUOTES>
+	{	System.out.print ("|");	}
+}
+void seperator() throws NumberFormatException :
+{ 
+	Token t;
+} {
+	//t = <SEPERATOR>
+	{	//System.out.print (" "+ t.image);	
+	}
+}
+
+void numbering() throws NumberFormatException :
+{
+	//System.out.print ("Numbering ");
+	Token t;
+} {
+	sec_num() | clause_num() | chapter_num()
+	//{	System.out.print (" ~ " );	}
+}
+void sec_num () :
+{ 	Token t; 
+} {
+	t = <SEC_NUM>
+	{	System.out.print(t.image);	}
+}
+void clause_num () :
+{ 	Token t; 
+} {
+	t = <CLAUSE_NUM>
+	{	System.out.print(t.image);	}
+}
+void chapter_num () :
+{ 	Token t; 
+} {
+	t = <CHAPTER_NUM>
+	{	System.out.print(t.image);	}
+}
+
+void newline() throws NumberFormatException :
+{ }{
+	<NEWLINE> 
+	{	System.out.print ("N# ");	}
+}
+void period () throws NumberFormatException :
+{ }{
+	<PERIOD>
+//	{	System.out.print("P# ");	}
+}
+void semi_colon () throws NumberFormatException :
+{ }{
+	<SEMI_COLON>
+}
+void colon () throws NumberFormatException :
+{ }{
+	<COLON>
+}
+void hyphen () throws NumberFormatException :
+{	
+	System.out.print("- ");
+} {
+	<HYPHEN> 
+}
+void literals() throws NumberFormatException :
+{ }{
+	<CHAPTER_L> | <SECTION_L> | <SUBSECTION_L> | <CLAUSE_L> | <SUBCLAUSE_L> | <PARAGRAPH_L> | <PROVIDED_L> | <ITEM_L>
+}
+void reference_literals() throws NumberFormatException :
+{ } {
+	<THIS_L> | <OF_L> | <COMMA_L>
+}
+void reference() throws NumberFormatException :
+{ } {
+	single_reference() ( LOOKAHEAD (2) <AND_L> numbering())? | LOOKAHEAD (2) self_reference()
+	{	System.out.print ("REF "+ getToken(0).image);	}
+}
+void single_reference() :
+{ } {
+	literals() (numbering()) 
+}
+void self_reference () :
+{ } {
+		<THIS_L> literals()
+}
+void date() throws NumberFormatException :
+{ 
+	Token t;
+} {
+	(<DATE> (<COMMA_L>)? )? t = <YEAR>
+	{ 	System.out.print(" Date = " + t.image);	}
+}
