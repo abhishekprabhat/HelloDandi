@@ -3,10 +3,52 @@ CHAPTER I: PRELIMINARY
 
 Section 1: Short title, extent and commencement.
 
-(1) any income derived from such land10 by-
+(1) This Act may be called the Income-tax Act, 1961.
+(2) It extends to the whole of India.
 
-(i) agriculture10 or
+(3) Save as otherwise provided in this Act, it shall come into force on the 1st day of April, 1962.
 
-(ii) the performance by a cultivator or receiver of rent-in-kind of any process ordinarily employed by a cultivator or receiver of rent-in-kind to render the produce raised or received by him fit to be taken to market10 or
+Section – 2: Definitions.
+
+In this Act, unless the context otherwise requires,- 
+[(1) "advance tax" means the advance tax payable in accordance with the provisions of Chapter XVII-C;]
+
+[ (1A)] "agricultural income"7 means8-
+
+9[(a) any rent10 or revenue10 derived10 from land10 which is situated in India and is used for agricultural purposes;]
+
+(b) any income derived from such land10 by-
+(ii) the performance by a cultivator or receiver of rent-in-kind of any process ordinarily employed by a cultivator or receiver of rent-in-kind to render the produce raised or received by him fit to be taken to market10; or
+
+(i) agriculture10; or
+
 
 (iii) the sale by a cultivator or receiver of rent-in-kind of the produce raised or received by him, in respect of which no process has been performed other than a process of the nature described in paragraph (ii) of this sub-clause ;
+
+(c) any income derived from any building owned and occupied by the receiver of the rent or revenue of any such land, or occupied by the cultivator or the receiver of rent-in-kind, of any land with respect to which, or the produce of which, any process mentioned in paragraphs (ii) and (iii) of sub-clause (b) is carried on :
+
+9[Provided that-
+
+(i) the building is on or in the immediate vicinity of the land, and is a building which the receiver of the rent or revenue or the cultivator, or the receiver of rent-in-kind, by reason of his connection with the land, requires as a dwelling house, or as a store-house, or other out-building,; and
+
+(ii) the land is either assessed to land revenue in India or is subject to a local rate assessed and collected by officers of the Government as such or where the land is not so assessed to land revenue or subject to a local rate, it is not situated-
+
+(A) in any area which is comprised within the jurisdiction of a municipality (whether known as a municipality, municipal corporation, notified area committee, town area committee, town committee or by any other name) or a cantonment board and which has a population of not less than ten thousand 11[***]; or
+
+11a[(B) in any area within the distance, measured aerially,-
+
+(I) not being more than two kilometres, from the local limits of any municipality or cantonment board referred to in item (A) and which has a population of more than ten thousand but not exceeding one lakh; or
+
+(II) not being more than six kilometres, from the local limits of any municipality or cantonment board referred to in item (A) and which has a population of more than one lakh but not exceeding ten lakh; or
+
+(III) not being more than eight kilometres, from the local limits of any municipality or cantonment board referred to in item (A) and which has a population of more than ten lakh.12
+
+13[14[Explanation 1.]-For the removal of doubts, it is hereby declared that revenue derived from land shall not include and shall be deemed never to have included any income arising from the transfer of any land referred to in item (a) or item (b) of sub-clause (iii) of clause (14) of this section.]
+
+15[Explanation 2.-For the removal of doubts, it is hereby declared that income derived from any building or land referred to in sub-clause (c) arising from the use of such building or land for any purpose (including letting for residential purpose or for the purpose of any business or profession) other than agriculture falling under sub-clause (a) or sub-clause (b) shall not be agricultural income.]
+
+16[Explanation 3.-For the purposes of this clause, any income derived from saplings or seedlings grown in a nursery shall be deemed to be agricultural income;]
+
+17[Explanation 4.-For the purposes of clause (ii) of the proviso to sub-clause (c), "population" means the population according to the last preceding census of which the relevant figures have been published before the first day of the previous year;]
+
+
