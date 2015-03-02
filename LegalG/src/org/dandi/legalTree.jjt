@@ -3,7 +3,12 @@
 options {
 	STATIC = false ;
 	FORCE_LA_CHECK = true;
+	LOOKAHEAD = 20000;
+	DEBUG_PARSER = true;
+	//DEBUG_LOOKAHEAD = true;
+
 }
+
 PARSER_BEGIN(Act)
 package org.dandi;
 
@@ -11,6 +16,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 class Act {
+  	public static int nesting_level = 0;
+  	public static int nestingT8 = 0;
+  	  	
 	public static void main( String[] args )
 	throws ParseException, FileNotFoundException {
 		System.out.println("First argument = "+args[0]);
@@ -32,7 +40,7 @@ TOKEN_MGR_DECLS :
 }  
 
 SKIP : { < WS : " " >	}
-SKIP : {"\t" | "\r" | "\uFFFF" | "\u201a" | "\u00c4" | "\u00ee" | "\u00fa" | "\u00f9" | "\u00ec" | "\u2013" }
+SKIP : {"\t" | "\r" | "\uFFFF" | "\u201a" | "\u00c4" | "\u00ee" | "\u00fa" | "\u00f9" | "\u00ec" | "\u2013" | "\u2014"}
 
 TOKEN [IGNORE_CASE] :
 {
@@ -191,18 +199,22 @@ void extended_sentence () :
 }
 void extended_sentence_semicolon () :
 { 
-	System.out.print ("ES-; ");
+	System.out.print ("ES-; "+ ++nesting_level);
 } {
-	part_sentence() hyphen() ( (LOOKAHEAD(numbered_para_type8()) numbered_para_type8())+ ) 
-	//part_sentence() ( hyphen() ((LOOKAHEAD(numbered_para_type2()) numbered_para_type2() (conjunct())? )+)) | (colon() (proviso_semicolon())+)
+	//part_sentence() hyphen() ( (LOOKAHEAD(numbered_para_type8()) numbered_para_type8())+ ) 
+	part_sentence() ( hyphen() ((LOOKAHEAD(numbered_para_type8()) numbered_para_type8() )+) | (colon() (proviso_semicolon())) | LOOKAHEAD (period() (explanation_period()  | explanation_semicolon())+ explanation_semicolon()) period() (explanation_period() | explanation_semicolon())+ explanation_semicolon())
 	//part_sentence() ( hyphen() ((LOOKAHEAD(numbered_para_type2()) numbered_para_type2() (conjunct())? )+ | (LOOKAHEAD (numbered_para_type1() newline()) numbered_para_type1())+ numbered_para_type2()) |  colon() (proviso_semicolon())+)
+	{	nesting_level--;	}
 }
 void extended_sentence_period () :
 { 
-	System.out.print ("ES.. ");
+	System.out.print ("ES.. "+ ++nesting_level);
 } {
 //	part_sentence() hyphen() (numbered_para_type2())+ numbered_para_type3()
-	LOOKAHEAD (extended_sentence_semicolon() numbered_para_type3()) extended_sentence_semicolon() numbered_para_type3() | part_sentence() colon() proviso_period()
+	//LOOKAHEAD (extended_sentence_semicolon() numbered_para_type3()) extended_sentence_semicolon() numbered_para_type3() | part_sentence() colon() proviso_period()
+	part_sentence() ( hyphen() ((LOOKAHEAD(numbered_para_type8()) numbered_para_type8() )+ numbered_para_type3()) | (colon() (proviso_period())) | LOOKAHEAD (period() (explanation_period() | explanation_semicolon())+ ) period() (explanation_period()| explanation_semicolon())+) 
+	{	nesting_level--;
+	}
 }
 void part_sentence () :
 {
@@ -228,8 +240,8 @@ void proviso_semicolon () :
 }
 void proviso_period () :
 { } {
-	newline() <PROVIDED_L> (LOOKAHEAD (period_sentence() (explanation_period())+) period_sentence() (explanation_period())+ | period_sentence() )
-	//newline() <PROVIDED_L> (period_sentence())
+	//newline() <PROVIDED_L> (LOOKAHEAD (period_sentence() (explanation_period())+) period_sentence() (explanation_period())+ | period_sentence() )
+	newline() <PROVIDED_L> (period_sentence())
 }
 void explanation_semicolon () :
 { } {
@@ -258,7 +270,7 @@ void numbered_para_type2() :
 	{	}
 }
 void numbered_para_type3() :
-{	System.out.print ("\t(.) " );	} {
+{	System.out.print ("\t(T3 "+ nesting_level+") " );	} {
 	(newline() numbering() ( period_sentence()))
 	{	}
 }
@@ -288,8 +300,8 @@ void numbered_para_type7() :
 	{	}
 }
 void numbered_para_type8() :
-{	System.out.print ("\t(T8) " );	} {
-	newline() numbering() semi_colon_sentence()
+{	System.out.print ("\t(T8 "+ nesting_level+") " );	} {
+	newline() numbering() semi_colon_sentence() (conjunct())?
 	{	}
 }
 void conjunct () :
